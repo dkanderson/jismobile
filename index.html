@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300|Open+Sans:100,300' rel='stylesheet' type='text/css'>
+    <script src="js/modernizr.js"></script>
+</head>
+<body>
+	<section id="news-page" data-role="page">
+		<header class="main-header">
+			<a href="#news"><h1><span>NEWS</span></h1></a>
+            <a class="mobile-trigger">
+                <span class="bar1"></span>
+                <span class="bar2"></span>
+                <span class="bar3"></span>
+            </a>
+		</header><!-- /header -->
+		<a href="single.html" class="main-story-wrap featured" data-ajax="false">
+            <div class="title_overlay"><h1>US Embassy Donates Forensic Vehicles to Police, INDECOM</h1><time class="date" title="{{date}}">2 hours ago</time></div>
+            <img src="http://jis.gov.jm/media/indecom-Vehicles2.jpg" alt="Feature Story">
+        </a>
+        <h3 id="featured-tb">Featured Stories</h3>
+        <ul id="list-content" class="mobi-list-view" data-role="content">
+                
+                
+    	</ul><!-- /content -->
+        <div id="right-panel" class="left-panel" data-display="overlay">
+            <nav class="sidebar-nav">
+                <a href="#news" class="news">JIS News</a>
+                <a href="#radio" class="radio">Radio</a>
+                <a href="#videos" class="videos">Videos</a>
+                <a href="#photos" class="photos">Photos</a>
+            </nav>
+        </div>
+	</section><!-- /page -->
+
+    <script id="storyTpl" type="text/template">
+            <a href="#{{id}}">
+                <div class="thumb-wrap">
+                    <img src="{{ thumbnail_images.profile-thumb.url }}" alt="">
+                </div>
+                <div class="title-wrap">
+                    <h2>{{ title }}</h2>
+                    <time class="date" title="{{date}}"></time>
+                </div>
+            </a>
+    </script>
+
+	<script src="js/jquery.js"></script>
+    <script src="js/underscore.js"></script>
+    <script src="js/backbone.js"></script>
+    <script src="js/handlebars.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        $('.mobile-trigger').on('click', function(e){
+            e.preventDefault();
+            console.log('click');
+            $('#right-panel').toggleClass('show-panel');
+        });
+    </script>
+</body>
+</html>

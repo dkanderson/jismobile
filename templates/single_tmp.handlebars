@@ -1,0 +1,11 @@
+<div class="main-story-wrap">
+	<img src="{{thumbnail_images.story-image.url}}" alt="{{title}}" />
+</div>
+<div class="article-wrap">
+    {{#if jis_author}}<span class="author">{{jis_author}} </span>{{/if}}<em class="author_email">{{author_email}}</em>
+    <h1>{{title}}</h1>
+    <span>Featured Stories |</span> <a class="date" title="{{date}}"></a>
+    <div class="single-content-wrap">
+    	{{{content}}}
+    </div>
+</div>

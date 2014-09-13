@@ -1,0 +1,24 @@
+{{#first posts}}
+<a href="single.html" class="main-story-wrap featured" data-ajax="false">
+    <div class="title_overlay"><h1>{{title}}</h1><span class="date" title="{{date}}"></span></div>
+    <img src="{{thumbnail_images.full.url}}" alt="Feature Story">
+</a>
+{{/first}}
+<h3 class="ui-bar ui-bar-a" id="latest-news">Featured Stories</h3>
+<div class="list-wrap">
+    <ul data-role="listview" data-inset="true" id="all-posts">
+    {{#slice posts offset="1"}}
+        <li>
+            <a href="single.html?{{@index}}" class="sl" data-ajax="false" data-index="{{@index}}">
+            	{{#if thumbnail_images}}
+            		<img src="{{thumbnail_images.profile-thumb.url}}" alt="{{title}}" />
+        		{{else}}
+        			<img src="http://jis.gov.jm/assets/img/news_mobile_thumb.jpg" alt="{{title}}" />
+        		{{/if}}
+            	<h2>{{#if byline}}{{byline}}{{else}}{{{title}}}{{/if}}</h2>
+            	<span class="date" title="{{date}}"></span>
+        	</a>
+    	</li>
+    {{/slice}}
+    </ul>
+</div>
