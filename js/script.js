@@ -18,20 +18,21 @@
      App.Collections.Stories = Backbone.Collection.extend({
         model: App.Models.Story,
         url: './data/news.json',
-        parse: function(resp){
+        parse: function (resp) {
             return resp.posts;
         }
      });
+
      App.Views.Story = Backbone.View.extend({
         tagName: 'li',
 
         template: Handlebars.compile($('#storyTpl').html()),
 
-        initialize: function(){
+        initialize: function () {
             this.render();
         },
 
-        render: function(){
+        render: function () {
             this.$el.html(this.template(this.model.toJSON()));
             return this;
         }
@@ -40,25 +41,25 @@
      App.Views.Stories = Backbone.View.extend({
          el: '#list-content',
 
-         initialize: function(){
+         initialize: function () {
             this.render();
             this.prettyDate();
          },
 
-         render:function(){
+         render:function () {
             this.collection.each(this.populate, this);
             return this;
          },
 
-         populate: function(stories){
+         populate: function (stories) {
             var story = new App.Views.Story({model: stories});
             this.$el.append(story.render().el);
          },
 
-         prettyDate: function(){
+         prettyDate: function () {
             // Takes an ISO time and returns a string representing how
             // long ago the date represents.
-            function prettyDate(time){
+            function prettyDate (time) {
                 var date = new Date((time || "").replace(/-/g,"/")),
                     diff = (((new Date()).getTime() - date.getTime()) / 1000),
                     day_diff = Math.floor(diff / 86400);
@@ -77,7 +78,7 @@
                     day_diff < 365 && Math.ceil( day_diff / 12 ) + " months ago";
             }
 
-            function prettyLinks(){
+            function prettyLinks () {
                 var links = document.getElementsByClassName('date');
                 for ( var i = 0; i < links.length; i++ )
                     if ( links[i].title ) {
@@ -91,18 +92,75 @@
             setInterval(prettyLinks, 5000);
 
          }
-     });
+    });
+
+    App.Views.NavPanel = Backbone.View.extend({
+        el: '#right-panel',
+
+        template: $('#navTpl').html(),
+
+        initialize: function () {
+            this.render();
+        },
+
+        render: function () {
+            this.$el.html(this.template);
+            return this;
+        }
+    });
+
+    App.Views.App = Backbone.View.extend({
+        el: '#appMain',
+
+        template: Handlebars.compile($('#appTpl').html()),
+
+        initialize: function () {
+            this.render();
+        },
+
+        events: {
+            'click .mobile-trigger': 'openPanel',
+        },
+
+
+        render: function () {
+            this.$el.html(this.template());
+            return this;
+        },
+
+        openPanel: function (e) {
+            e.preventDefault();
+            $('#right-panel').toggleClass('show-panel');
+        }
+    });
+
+    App.Views.Featured = Backbone.View.extend({
+        el: '#featured',
+
+        template: Handlebars.compile($('#featuredTpl').html()),
+
+        initialize: function () {
+            this.render();
+        },
+
+        render: function () {
+            this.$el.html(this.template(this.collection.at(0).toJSON()));
+            return this;
+        }
+    });
      
-     App.Routes.Kickstart = Backbone.Router.extend({
+    App.Routes.Kickstart = Backbone.Router.extend({
         routes: {
             '': 'start'
         },
-        start: function(){
+        start: function () {
+            var app = new App.Views.App();
             var news = new App.Collections.Stories();
                  news.fetch({
-                    success: function(theCollection){
-                        console.log(theCollection);
-                        var s = new App.Views.Stories({collection: theCollection});
+                    success: function (theCollection) {
+                        var s = new App.Views.Stories({collection: theCollection}),
+                            np = new App.Views.NavPanel(),
+                            feature = new App.Views.Featured({collection: theCollection});
                  }
              });
         }
