@@ -9,13 +9,14 @@
     <script src="js/modernizr.js"></script>
 </head>
 <body>
-	<section id="appMain">
+	<div class="header"></div>
+    <section id="appMain">
 		<!-- Load App -->
 	</section><!-- /page -->
     <div id="right-panel" class="left-panel"></div>
 
     <script id="storyTpl" type="text/template">
-            <a href="#{{id}}">
+            <a href="?id={{id}}">
                 <div class="thumb-wrap">
                     <img src="{{ thumbnail_images.profile-thumb.url }}" alt="">
                 </div>
@@ -33,25 +34,23 @@
             <a href="#photos" class="photos">Photos</a>
         </nav>
     </script>
-    <script id="appTpl" type="text/template">
-        <header class="main-header">
-            <a href="#news"><h1><span>NEWS</span></h1></a>
-            <a class="mobile-trigger">
-                <span class="bar1"></span>
-                <span class="bar2"></span>
-                <span class="bar3"></span>
-            </a>
-        </header><!-- /header -->
+    <script id="storiesTpl" type="text/template">
         <div id="featured"></div>
-        <h3 id="featured-tb">Featured Stories</h3>
-        <ul id="list-content" class="mobi-list-view">        
-        </ul><!-- /content -->
+        <ul id="list-content" class="mobi-list-view"></ul>
     </script>
     <script id="featuredTpl" type="text/template">
         <a href="single.html" class="main-story-wrap featured">
             <div class="title_overlay"><h1>{{title}}</h1><time class="date" title="{{date}}"></time></div>
             <img src="http://jis.gov.jm/media/indecom-Vehicles2.jpg" alt="Feature Story">
         </a>
+    </script>
+    <script id="headerTpl" type="text/template">
+            <a href="#news"><h1><span>NEWS</span></h1></a>
+            <a class="mobile-trigger">
+                <span class="bar1"></span>
+                <span class="bar2"></span>
+                <span class="bar3"></span>
+            </a>
     </script>
 
 
