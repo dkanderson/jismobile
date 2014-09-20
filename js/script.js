@@ -2,8 +2,6 @@
 
     'use strict';
 
-    window.vent = _.extend({}, Backbone.Events);
-
     var App = {
         Models: {},
         Views: {},
@@ -13,6 +11,7 @@
     };
 
     App.Models.Story = Backbone.Model.extend({
+        urlRoot: '/story'
     });
 
     App.Collections.Stories = Backbone.Collection.extend({
@@ -28,7 +27,8 @@
         template: Handlebars.compile($('#storiesTpl').html()),
 
         initialize: function () {
-            window.vent.on('collection:loaded', this.render, this);
+            App.Helpers.jsonfetch();
+            App.Helpers.mediator.on('collection:loaded', this.render, this);
         },
 
         render: function (theCollection) {
@@ -95,11 +95,12 @@
 
         initialize: function () {
             this.render();
-            this.prettyDate();
+            App.Helpers.upDate();
         },
 
         render: function () {
-            this.collection.each(this.populate, this);
+            var newCollection = _(this.collection.rest(1));
+            newCollection.each(this.populate, this);
             return this;
         },
 
@@ -108,7 +109,142 @@
             this.$el.append(story.render().el);
         },
 
-        prettyDate: function () {
+    });
+
+    App.Views.NavPanel = Backbone.View.extend({
+        el: '#right-panel',
+
+        template: $('#navTpl').html(),
+
+        initialize: function () {
+            this.render();
+        },
+
+        render: function () {
+            this.$el.html(this.template);
+            return this;
+        }
+    });
+
+    App.Views.Featured = Backbone.View.extend({
+        el: '#featured',
+
+        template: Handlebars.compile($('#featuredTpl').html()),
+
+        initialize: function () {
+            this.render();
+        },
+
+        render: function () {
+            this.$el.html(this.template(this.collection.at(0).toJSON()));
+            return this;
+        }
+
+    });
+
+    App.Views.FullStory = Backbone.View.extend({
+        template: Handlebars.compile($('#fullStoryTpl').html()),
+
+        initialize: function () {
+            this.render();
+
+        },
+
+        render: function () {
+            this.$el.html(this.template(this.model.toJSON()));
+            this.updateIndex();
+        },
+
+        updateIndex: function () {
+            var index = this.model.collection.indexOf(this.model) + 1,
+                length = this.model.collection.length;
+            this.$el.find('.pagenav').html('<span class="current-index">' + index + '</span> of <span class="total-pages">' + length + '</span>');
+        }
+    });
+
+    App.Routes.Kickstart = Backbone.Router.extend({
+        routes: {
+            '': 'start',
+            'story/:id': 'singlePage',
+            'news': 'homeButton'
+        },
+
+        initialize: function () {
+            this.headerView = new App.Views.HeaderView();
+            this.navPanel = new App.Views.NavPanel();
+            $('.header').html(this.headerView.el);
+
+
+
+        },
+
+        homeButton: function () {
+            this.start();
+        },
+
+        start: function () {
+            this.app = new App.Views.App();
+            $('#appMain').html(this.app.el);
+            this.news = new App.Collections.Stories();
+            this.news.fetch({
+                success: function (theCollection) {
+                    App.Helpers.mediator.trigger('collection:loaded', theCollection);
+                }
+            });
+        },
+
+        singlePage: function (id) {
+            var model;
+
+            if (!this.news) {
+                var collection = new App.Collections.Stories();
+                collection.fetch({
+                    success: function (collection) {
+                        var fullStory = new App.Views.FullStory({model: collection.get(id)});
+                        $('#appMain').html(fullStory.el);
+                    }
+                });
+
+            } else {
+                model = this.news.get(id);
+                this.fullStory = new App.Views.FullStory({model: model});
+                $('#appMain').html(this.fullStory.el);
+            }
+
+            App.Helpers.upDate();
+
+        }
+    });
+
+    App.Helpers = {
+        mediator: _.extend({}, Backbone.Events),
+
+        before: function () {
+            return function before(decoration) {
+                return function (method) {
+                    return function () {
+                        decoration.apply(this, arguments);
+                        return method.apply(this, arguments);
+                    };
+                };
+            };
+        },
+
+        cleanBefore: function () {
+            return this.before(function () {
+                if (this.currentView) {
+                    this.currentView.remove();
+
+                    if (this.currentView.children) {
+                        _(this.currentView.children).invoke('remove');
+                    }
+
+                    delete this.currentView;
+                }
+            });
+        },
+
+        upDate: function () {
             // Takes an ISO time and returns a string representing how
             // long ago the date represents.
             function prettyDate(time) {
@@ -146,66 +282,12 @@
             prettyLinks();
             setInterval(prettyLinks, 5000);
 
+        },
+
+        jsonfetch: function () {
+            console.log('fetching...');
         }
-    });
-
-    App.Views.NavPanel = Backbone.View.extend({
-        el: '#right-panel',
-
-        template: $('#navTpl').html(),
-
-        initialize: function () {
-            this.render();
-        },
-
-        render: function () {
-            this.$el.html(this.template);
-            return this;
-        }
-    });
-
-    App.Views.Featured = Backbone.View.extend({
-        el: '#featured',
-
-        template: Handlebars.compile($('#featuredTpl').html()),
-
-        initialize: function () {
-            this.render();
-        },
-
-        render: function () {
-            this.$el.html(this.template(this.collection.at(0).toJSON()));
-            return this;
-        }
-    });
-
-    App.Routes.Kickstart = Backbone.Router.extend({
-        routes: {
-            '': 'start',
-            '/:id': 'singlePage'
-        },
-
-        initialize: function () {
-            this.headerView = new App.Views.HeaderView();
-            this.navPanel = new App.Views.NavPanel();
-            $('.header').html(this.headerView.el);
-        },
-
-        start: function () {
-            this.app = new App.Views.App();
-            $('#appMain').html(this.app.el);
-            this.news = new App.Collections.Stories();
-            this.news.fetch({
-                success: function (theCollection) {
-                    window.vent.trigger('collection:loaded', theCollection);
-                }
-            });
-        },
-
-        singlePage: function (id) {
-            console.log(id);
-        }
-    });
+    };
 
     App.kickstart = new App.Routes.Kickstart();
     Backbone.history.start();
