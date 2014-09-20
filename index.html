@@ -16,7 +16,7 @@
     <div id="right-panel" class="left-panel"></div>
 
     <script id="storyTpl" type="text/template">
-            <a href="?id={{id}}">
+            <a href="#story/{{id}}">
                 <div class="thumb-wrap">
                     <img src="{{ thumbnail_images.profile-thumb.url }}" alt="">
                 </div>
@@ -39,9 +39,9 @@
         <ul id="list-content" class="mobi-list-view"></ul>
     </script>
     <script id="featuredTpl" type="text/template">
-        <a href="single.html" class="main-story-wrap featured">
+        <a href="#story/{{id}}" class="main-story-wrap featured">
             <div class="title_overlay"><h1>{{title}}</h1><time class="date" title="{{date}}"></time></div>
-            <img src="http://jis.gov.jm/media/indecom-Vehicles2.jpg" alt="Feature Story">
+            <img src="{{thumbnail_images.story-image.url}}" alt="Feature Story">
         </a>
     </script>
     <script id="headerTpl" type="text/template">
@@ -51,6 +51,20 @@
                 <span class="bar2"></span>
                 <span class="bar3"></span>
             </a>
+    </script>
+    <script id="fullStoryTpl" type="text/template">
+        <div class="main-story-wrap">
+            <img src="{{thumbnail_images.story-image.url}}" alt="{{title}}" />
+        </div>
+        <div class="article-wrap">
+            <div class="pagenav"></div>
+            {{#if jis_author}}<span class="author">{{jis_author}} </span>{{/if}}<em class="author_email">{{author_email}}</em>
+            <h1>{{title}}</h1>
+            <span>{{categories.1.title}} |</span> <a class="date" title="{{date}}"></a>
+            <div class="single-content-wrap">
+                {{{content}}}
+            </div>
+        </div>
     </script>
 
 
