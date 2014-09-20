@@ -148,16 +148,11 @@ header.main-header h1:before{
     line-height: 1.5em;
     margin-top:0;
 }
-.ui-page {
-    -webkit-backface-visibility: hidden;
-}
-
-#news-page{
-}
 
 .title_overlay{
     position:absolute;
-    bottom:0;width:100%;
+    bottom:0;
+    width:100%;
     min-height: 2em;
     color:#fff;
     text-shadow:1px 1px 1px rgba(0,0,0,0.23);
@@ -208,11 +203,7 @@ header.main-header h1:before{
     font-size: 1em;
     margin:0;
 }
-.article-wrap h1{
-    font-family: 'Open Sans Condensed', sans-serif;
-    font-weight: 300;
-    font-size: 2.5em;
-}
+
 span.date, a.date, .author_email{
     font-family: 'Open Sans Condensed', sans-serif;
     font-weight:300;
@@ -228,6 +219,8 @@ time.date{
 
 a.featured{
     position:relative;
+    display: block;
+    width: 100%;
 }
 .featured .title_overlay time.date{
     position:absolute;
@@ -246,8 +239,38 @@ a.featured{
     text-indent: 20px;
     color:#666;
 }
+.article-wrap h1{
+    font-family: 'Open Sans Condensed', sans-serif;
+    font-weight: 300;
+    font-size: 2.5em;
+    margin:.8em 0;
+}
+.main-story-wrap img{
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-bottom: 1px solid rgba(255,255,255,0.75);
+}
+.article-wrap{
+    padding: 40px 20px;
+    position:relative;
+}
+.article-wrap p{
+    padding: .5em 0;
+    line-height: 1.5;
+}
 .author{
     margin-top: 20px;
+}
+.single-content-wrap{
+    padding-top: 20px;
+    position: relative;
+}
+.pagenav{
+    position: absolute;
+    top:10px;
+    right:20px;
+    color:#666;
 }
 
 #right-panel{
@@ -294,30 +317,6 @@ a.featured{
     border-top:1px solid rgba(255,255,255,0.1);
 }
 
-
-/* Portrait layout (default) */
-.app {
-    background:url(../img/logo.png) no-repeat center top; /* 170px x 200px */
-    position:absolute;             /* position in the center of the screen */
-    left:50%;
-    top:50%;
-    height:50px;                   /* text area height */
-    width:225px;                   /* text area width */
-    text-align:center;
-    padding:180px 0px 0px 0px;     /* image height is 200px (bottom 20px are overlapped with text) */
-    margin:-115px 0px 0px -112px;  /* offset vertical: half of image height and text area height */
-                                   /* offset horizontal: half of text area width */
-}
-
-/* Landscape layout (with min-width) */
-@media screen and (min-aspect-ratio: 1/1) and (min-width:400px) {
-    .app {
-        background-position:left center;
-        padding:75px 0px 75px 170px;  /* padding-top + padding-bottom + text area = image height */
-        margin:-90px 0px 0px -198px;  /* offset vertical: half of image height */
-                                      /* offset horizontal: half of image width and text area width */
-    }
-}
 
 
 @keyframes fade {
