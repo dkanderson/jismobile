@@ -7,13 +7,18 @@
         Views: {},
         Collections: {},
         Routes: {},
-        Helpers: {}
+        helpers: {}
     };
 
+    // Models
     App.Models.Story = Backbone.Model.extend({
-        urlRoot: '/story'
     });
 
+    App.Models.Videos = Backbone.Model.extend({
+
+    });
+
+    //Collections
     App.Collections.Stories = Backbone.Collection.extend({
         model: App.Models.Story,
         url: './data/news.json',
@@ -22,13 +27,22 @@
         }
     });
 
+    App.Collections.Videos = Backbone.Collection.extend({
+        model: App.Models.Video,
+        url: '',
+        parse: function (resp) {
+            return resp.items;
+        }
+    });
+
+    //Views
     App.Views.App = Backbone.View.extend({
 
         template: Handlebars.compile($('#storiesTpl').html()),
 
         initialize: function () {
-            App.Helpers.jsonfetch();
-            App.Helpers.mediator.on('collection:loaded', this.render, this);
+            App.helpers.jsonfetch();
+            App.helpers.mediator.on('collection:loaded', this.render, this);
         },
 
         render: function (theCollection) {
@@ -50,6 +64,7 @@
         }
     });
 
+    //Header
     App.Views.HeaderView = Backbone.View.extend({
         tagName: 'header',
 
@@ -75,6 +90,7 @@
         }
     });
 
+    //Sigle story (list view)
     App.Views.Story = Backbone.View.extend({
         tagName: 'li',
 
@@ -90,12 +106,13 @@
         }
     });
 
+    // Story Collection List View
     App.Views.Stories = Backbone.View.extend({
         el: '#list-content',
 
         initialize: function () {
             this.render();
-            App.Helpers.upDate();
+            App.helpers.upDate();
         },
 
         render: function () {
@@ -111,6 +128,7 @@
 
     });
 
+    //Nav Panel
     App.Views.NavPanel = Backbone.View.extend({
         el: '#right-panel',
 
@@ -126,6 +144,7 @@
         }
     });
 
+    //Featured Story
     App.Views.Featured = Backbone.View.extend({
         el: '#featured',
 
@@ -142,31 +161,86 @@
 
     });
 
+    // Full Story
     App.Views.FullStory = Backbone.View.extend({
         template: Handlebars.compile($('#fullStoryTpl').html()),
 
+        events: {
+            'click #next-page': 'getNextPage',
+            'click #prev-page': 'getPrevPage',
+            'panleft': 'handleSwipe',
+            'panright': 'handleSwipe'
+        },
+
         initialize: function () {
             this.render();
+        },
 
+        handleSwipe: function (e) {
+            var panel = $('#right-panel');
+            if (panel.hasClass('show-panel')) {
+                if (e.type === 'panleft') {
+                    panel.removeClass('show-panel');
+
+                }
+            } else {
+                if (e.type === 'panleft') {
+                    console.log(e);
+                    this.getNextPage();
+                } else {
+                    this.getPrevPage();
+                }
+            }
         },
 
         render: function () {
             this.$el.html(this.template(this.model.toJSON()));
-            this.updateIndex();
+            this.pagination();
+            this.$el.hammer();
         },
 
-        updateIndex: function () {
-            var index = this.model.collection.indexOf(this.model) + 1,
+        getCurrentIndex: function () {
+            return this.model.collection.indexOf(this.model);
+        },
+
+        getNextPage: function () {
+            var currentIndex = this.getCurrentIndex(), nextPageId;
+            if (currentIndex <= 18) {
+                nextPageId = this.model.collection.at(currentIndex + 1).get('id');
+                App.helpers.mediator.trigger('nextpage', nextPageId);
+            } else {
+                //do something relevant or nothing? hmmm...
+            }
+
+        },
+
+        getPrevPage: function () {
+            var currentIndex  = this.getCurrentIndex(), prevPageId;
+
+            if (currentIndex >= 1) {
+                prevPageId = this.model.collection.at(currentIndex - 1).get('id');
+                App.helpers.mediator.trigger('prevpage', prevPageId);
+            } else {
+                $($('#right-panel').addClass('show-panel'));
+            }
+        },
+
+        pagination: function () {
+            var index = this.getCurrentIndex() + 1,
                 length = this.model.collection.length;
             this.$el.find('.pagenav').html('<span class="current-index">' + index + '</span> of <span class="total-pages">' + length + '</span>');
         }
     });
 
+    //Router
     App.Routes.Kickstart = Backbone.Router.extend({
         routes: {
             '': 'start',
             'story/:id': 'singlePage',
-            'news': 'homeButton'
+            'news': 'homeButton',
+            'radio': 'radio',
+            'videos': 'videos',
+            'photos': 'photos'
         },
 
         initialize: function () {
@@ -174,8 +248,12 @@
             this.navPanel = new App.Views.NavPanel();
             $('.header').html(this.headerView.el);
 
+            App.helpers.mediator.on('nextpage', this.gotoPage, this);
+            App.helpers.mediator.on('prevpage', this.gotoPage, this);
+        },
 
-
+        gotoPage: function (id) {
+            this.navigate('story/' + id, {trigger: true});
         },
 
         homeButton: function () {
@@ -188,7 +266,7 @@
             this.news = new App.Collections.Stories();
             this.news.fetch({
                 success: function (theCollection) {
-                    App.Helpers.mediator.trigger('collection:loaded', theCollection);
+                    App.helpers.mediator.trigger('collection:loaded', theCollection);
                 }
             });
         },
@@ -199,33 +277,35 @@
             if (!this.news) {
                 var collection = new App.Collections.Stories();
                 collection.fetch({
-                    success: function (collection) {
+                    success: function () {
                         var fullStory = new App.Views.FullStory({model: collection.get(id)});
                         $('#appMain').html(fullStory.el);
-                    }
+                        $('html,body').animate({ scrollTop: 0 }, 'slow');
+                    },
+
                 });
 
             } else {
                 model = this.news.get(id);
                 this.fullStory = new App.Views.FullStory({model: model});
                 $('#appMain').html(this.fullStory.el);
+                $('html,body').animate({ scrollTop: 0 }, 'slow');
             }
 
-            App.Helpers.upDate();
+            App.helpers.upDate();
 
         }
     });
 
-    App.Helpers = {
+    //Helper functions
+    App.helpers = {
         mediator: _.extend({}, Backbone.Events),
 
-        before: function () {
-            return function before(decoration) {
-                return function (method) {
-                    return function () {
-                        decoration.apply(this, arguments);
-                        return method.apply(this, arguments);
-                    };
+        before: function (decoration) {
+            return function (method) {
+                return function () {
+                    decoration.apply(this, arguments);
+                    return method.apply(this, arguments);
                 };
             };
         },
