@@ -62,7 +62,9 @@ p{font-size:14px;color:#6a6a6a;line-height: 18px}
 header.main-header{
     border-bottom:1px solid #fed23a;
     height:50px;
-    position:relative;
+    position:fixed;
+    width:100%;
+    z-index: 9999;
     background:#000;
 }
 header.main-header a{
@@ -89,7 +91,9 @@ header.main-header h1:before{
     top:50%;
     margin-top:-18px;
 }
-
+#appMain{
+    padding-top:50px;
+}
 .mobile-trigger{
     display: block;
     position: absolute;
@@ -275,7 +279,7 @@ a.featured{
 
 #right-panel{
     background: rgba(0,0,0,0.85);
-    position: absolute;
+    position: fixed;
     width:50%;
     max-width: 400px;
     height:100%;
@@ -288,9 +292,9 @@ a.featured{
     -o-transform: translateX(-400px);
     transform: translateX(-400px);
 
-    -webkit-transition: ease-in-out 0.6s;
-    -o-transition: ease-in-out 0.6s;
-    transition: ease-in-out 0.6s;
+    -webkit-transition: ease 0.6s;
+    -o-transition: ease 0.6s;
+    transition: ease 0.6s;
 }
 #right-panel.show-panel{
     -webkit-transform: translateX(0px);
@@ -315,6 +319,14 @@ a.featured{
     padding-right:20px;
     border-bottom:1px solid rgba(0,0,0,0.5);
     border-top:1px solid rgba(255,255,255,0.1);
+}
+#next-page, #prev-page{
+    cursor: pointer;
+    background:rgba(0,0,0,0.3);
+    border-radius: 5px;
+    padding:10px;
+    display: inline-block;
+    margin-top:20px;
 }
 
 
